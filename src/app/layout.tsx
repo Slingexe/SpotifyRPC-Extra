@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Listen Along",
-  description: "Listen Along with Sling.",
+  title: `${process.env.PAGE_TITLE || "SpotifyRPC Extras"}`,
+  description: `${process.env.PAGE_DESCRIPTION || "Extra info that couldn't fit in the discord RPC"}`,
 };
 
 export default function RootLayout({
