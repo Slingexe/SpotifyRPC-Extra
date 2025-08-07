@@ -2,6 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SiSpotify } from '@icons-pack/react-simple-icons';
+
 
 interface TrackData {
   is_offline: boolean;
@@ -88,15 +90,23 @@ export default function TrackInfo() {
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-2xl shadow-lg max-w-2xl mx-auto flex flex-row items-center gap-6">
       {/* Album Art */}
       <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg flex-shrink-0 relative">
-        <img
-          src={track.artURL || process.env.BACKUP_IMAGE}
-          alt={`${track.title || 'None'} album art`}
-          className="w-full h-full object-cover"
-        />
+        {track.is_offline || !track.artURL ? (
+          <SiSpotify
+            color="#1ED760"
+            className="w-full h-full text-gray-600"
+            title="Offline or no album art available"
+          />
+        ) : (
+          <img
+            src={track.artURL}
+            alt={`${track.title || 'None'} album art`}
+            className="w-full h-full object-cover"
+          />
+        )}
         <span
-          className={`absolute bottom-2 right-2 text-xs px-2 py-0.5 rounded-full shadow-lg ${track.is_playing ? 'bg-green-700 text-green-300' : 'bg-gray-700 text-gray-400'}`}
+          className={`absolute bottom-2 right-2 text-xs px-2 py-0.5 rounded-full shadow-lg ${track.is_offline ? 'bg-gray-600 text-gray-200' : track.is_playing ? 'bg-green-600 text-green-200' : 'bg-yellow-600 text-yellow-200'}`}
         >
-          {track.is_playing ? 'Playing' : 'Paused'}
+          {track.is_offline ? 'Offline' : track.is_playing ? 'Playing' : 'Paused'}
         </span>
       </div>
       {/* Song Data */}
@@ -106,7 +116,7 @@ export default function TrackInfo() {
             className="text-2xl font-bold text-white w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
             title={track.title}
           >
-            {track.title}
+            {track.is_offline ? 'User is not on Spotify' : track.title || 'None'}
           </h2>
           <p
             className="text-gray-300 text-base mb-1 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
@@ -142,20 +152,27 @@ export default function TrackInfo() {
           </div>
         </div>
         <div className="w-full flex flex-row items-center gap-2 mt-3">
-          {track.is_offline && (
-            <span className="text-xs bg-yellow-700 text-yellow-200 px-2 py-0.5 rounded-full">Offline</span>
-          )}
           {/* Open Track Button */}
-          <a
-            href={`https://open.spotify.com/track/${track.uri?.split(":").pop()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs bg-green-700 text-green-200 px-2 py-0.5 rounded-full hover:bg-green-800 transition-colors"
-          >
-            Open Track
-          </a>
-          {/* Open Context Button (Album/Playlist/Liked Songs) */}
-          {track.context_type && track.context_uri && (track.context_type === 'album' || track.context_type === 'playlist') && (
+          {track.is_offline ? (
+            <span className="text-xs bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full cursor-not-allowed" title="Track is offline">
+              Open Track
+            </span>
+          ) : (
+            <a
+              href={`https://open.spotify.com/track/${track.uri?.split(":").pop()}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs bg-green-700 text-green-200 px-2 py-0.5 rounded-full hover:bg-green-800 transition-colors"
+            >
+              Open Track
+            </a>
+          )}
+          {/* Open Context Button (Album/Playlist) */}
+          {track.is_offline ? (
+            <span className="text-xs bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full cursor-not-allowed" title="Context is offline">
+              Open Context
+            </span>
+          ) : track.context_type && track.context_uri && track.context_type !== 'user_collection' && (
             <a
               href={`https://open.spotify.com/${track.context_type}/${track.context_uri?.split(":").pop()}`}
               target="_blank"
@@ -174,17 +191,6 @@ export default function TrackInfo() {
             >
               Open Playlist
             </span>
-          )}
-          {/* Liked Songs special case */}
-          {track.context_type === 'collection' && (
-            <a
-              href="https://open.spotify.com/collection/tracks"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs bg-purple-700 text-purple-200 px-2 py-0.5 rounded-full hover:bg-purple-800 transition-colors"
-            >
-              Open Liked Songs
-            </a>
           )}
         </div>
       </div>
