@@ -4,10 +4,11 @@
 import { useEffect, useState } from "react";
 import { SiSpotify } from '@icons-pack/react-simple-icons';
 
-
 interface TrackData {
   is_offline: boolean;
   is_playing: boolean;
+  ratelimit: boolean;
+  rl_time: number;
   title: string;
   artist: string;
   uri: string;
@@ -90,7 +91,7 @@ export default function TrackInfo() {
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-2xl shadow-lg max-w-2xl mx-auto flex flex-row items-center gap-6">
       {/* Album Art */}
       <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg flex-shrink-0 relative">
-        {track.is_offline || !track.artURL ? (
+        {track.is_offline || track.ratelimit || !track.artURL ? (
           <SiSpotify
             color="#1ED760"
             className="w-full h-full text-gray-600"
@@ -104,9 +105,9 @@ export default function TrackInfo() {
           />
         )}
         <span
-          className={`absolute bottom-2 right-2 text-xs px-2 py-0.5 rounded-full shadow-lg ${track.is_offline ? 'bg-gray-600 text-gray-200' : track.is_playing ? 'bg-green-600 text-green-200' : 'bg-yellow-600 text-yellow-200'}`}
+          className={`absolute bottom-2 right-2 text-xs px-2 py-0.5 rounded-full shadow-lg ${track.ratelimit ? 'bg-red-600 text-red-200' : track.is_offline ? 'bg-gray-600 text-gray-200' : track.is_playing ? 'bg-green-600 text-green-200' : 'bg-yellow-600 text-yellow-200'}`}
         >
-          {track.is_offline ? 'Offline' : track.is_playing ? 'Playing' : 'Paused'}
+          {track.ratelimit ? `Rate Limited` : track.is_offline ? 'Offline' : track.is_playing ? 'Playing' : 'Paused'}
         </span>
       </div>
       {/* Song Data */}
@@ -116,7 +117,7 @@ export default function TrackInfo() {
             className="text-2xl font-bold text-white w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
             title={track.title}
           >
-            {track.is_offline ? 'User is not on Spotify' : track.title || 'None'}
+            {track.ratelimit ? 'Rate Limited' : track.is_offline ? 'User is not on Spotify' : track.title || 'None'}
           </h2>
           <p
             className="text-gray-300 text-base mb-1 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
@@ -153,7 +154,7 @@ export default function TrackInfo() {
         </div>
         <div className="w-full flex flex-row items-center gap-2 mt-3">
           {/* Open Track Button */}
-          {track.is_offline ? (
+          {track.is_offline || track.ratelimit ? (
             <span className="text-xs bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full cursor-not-allowed" title="Track is offline">
               Open Track
             </span>
@@ -168,7 +169,7 @@ export default function TrackInfo() {
             </a>
           )}
           {/* Open Context Button (Album/Playlist) */}
-          {track.is_offline ? (
+          {track.is_offline || track.ratelimit ? (
             <span className="text-xs bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full cursor-not-allowed" title="Context is offline">
               Open Context
             </span>
