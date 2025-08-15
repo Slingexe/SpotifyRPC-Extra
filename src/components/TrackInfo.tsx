@@ -91,7 +91,7 @@ export default function TrackInfo() {
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-2xl shadow-lg max-w-2xl mx-auto flex flex-row items-center gap-6">
       {/* Album Art */}
       <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg flex-shrink-0 relative">
-        {track.is_offline || track.ratelimit || !track.artURL ? (
+        {track.is_offline || track.ratelimit && !track.artURL ? (
           <SiSpotify
             color="#1ED760"
             className="w-full h-full text-gray-600"
@@ -117,7 +117,7 @@ export default function TrackInfo() {
             className="text-2xl font-bold text-white w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
             title={track.title}
           >
-            {track.ratelimit ? 'Rate Limited' : track.is_offline ? 'User is not on Spotify' : track.title || 'None'}
+            {track.is_offline ? 'User is not on Spotify' : track.title || 'None'}
           </h2>
           <p
             className="text-gray-300 text-base mb-1 w-full max-w-full overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer"
