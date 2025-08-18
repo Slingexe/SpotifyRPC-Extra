@@ -29,7 +29,7 @@ export default function TrackInfo() {
   // Fetch from server and sync local progress
   async function fetchNowPlaying() {
     try {
-      const res = await fetch("/api/now-playing");
+      const res = process.env.NEXT_PUBLIC_ENDPOINT_PUBLIC === "true" ? await fetch(`${process.env.NEXT_PUBLIC_API_URL}`) : await fetch("/api/now-playing");
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setTrack(data);
@@ -46,7 +46,7 @@ export default function TrackInfo() {
   // Poll server every 3s
   useEffect(() => {
     fetchNowPlaying();
-    const interval = setInterval(fetchNowPlaying, 3000);
+    const interval = setInterval(fetchNowPlaying, process.env.NEXT_PUBLIC_POLL_INTERVAL ? parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL) : 3000);
     return () => clearInterval(interval);
   }, []);
 
